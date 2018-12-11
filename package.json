@@ -1,0 +1,26 @@
+{
+  "name": "soeth",
+  "version": "0.0.1",
+  "description": "adapte eos and eth, and adapte pluin - MateMask and Scatter",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xiaoyifan6/soeth.git"
+  },
+  "keywords": [
+    "eos",
+    "eosjs",
+    "eth",
+    "MateMask",
+    "Scatter"
+  ],
+  "author": "陨石坠灭",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xiaoyifan6/soeth/issues"
+  },
+  "homepage": "https://github.com/xiaoyifan6/soeth#readme"
+}
