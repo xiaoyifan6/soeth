@@ -1,0 +1,34 @@
+import { BaseAPI } from "./Base";
+declare type NullableFunction = Function | undefined;
+export declare abstract class CustomApi implements BaseAPI {
+    private _mode;
+    private _isRunning;
+    private _tIndex;
+    protected event_cbk: NullableFunction;
+    protected error_cbk: NullableFunction;
+    protected account_changed_cbk: NullableFunction;
+    protected contract_cbk: NullableFunction;
+    protected identity_cbk: NullableFunction;
+    readonly mode: string;
+    readonly isRunning: boolean;
+    onEvent(cbk: Function): BaseAPI;
+    onError(cbk: Function): BaseAPI;
+    onAccountChanged(cbk: Function): BaseAPI;
+    onIdentity(cbk: Function): BaseAPI;
+    onContract(cbk: Function): BaseAPI;
+    getMode(): string;
+    protected sleep(t: number): Promise<any>;
+    protected start(): void;
+    protected stop(): void;
+    abstract getSymbol(): string;
+    abstract plugin(): string;
+    abstract usePlugin(): boolean;
+    abstract isInitPlugin(): boolean;
+    abstract hasAccount(): boolean;
+    abstract defaultAccount(): string;
+    abstract check(): boolean;
+    abstract addEvent(name: string, cbk: Function): void;
+    protected updateStatus(): void;
+    constructor(mode: string);
+}
+export {};
