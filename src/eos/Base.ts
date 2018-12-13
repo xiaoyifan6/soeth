@@ -1,3 +1,5 @@
+import { Net } from "../base/Base";
+
 export type IAccount = {
     name: string,
     authority: string,
@@ -28,17 +30,7 @@ export type EosSetting = {
     chainId: string,
 }
 
-class Net {
-    protected _url: string;
-    public get url(): string { return this._url; }
-    public constructor(url: string) { this._url = url; }
 
-    public get host(): string { return this._url.split(":")[1].replace(/\/\//g, ""); }
-
-    public get port(): number { return parseInt(this._url.split(":")[2] || "443"); }
-
-    public get protocal(): string { return this._url.split(":")[0]; }
-}
 
 class MultiNet extends Net {
     private _urls: {

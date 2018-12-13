@@ -8,7 +8,39 @@ exports.ErrorCode = {
     PluginNotInit: 1000,
     AccountNotFound: 1001,
     MissIdentity: 1002,
+    TranSactionError: 1003,
+    NetError: 1004,
+    AccountError: 1005,
+    NetNotReady: 1006,
+    UnknowError: -1
 };
+var Net = /** @class */ (function () {
+    function Net(url) {
+        this._url = url;
+    }
+    Object.defineProperty(Net.prototype, "url", {
+        get: function () { return this._url; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Net.prototype, "host", {
+        get: function () { return this._url.split(":")[1].replace(/\/\//g, ""); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Net.prototype, "port", {
+        get: function () { return parseInt(this._url.split(":")[2] || "443"); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Net.prototype, "protocal", {
+        get: function () { return this._url.split(":")[0]; },
+        enumerable: true,
+        configurable: true
+    });
+    return Net;
+}());
+exports.Net = Net;
 var Base = /** @class */ (function () {
     function Base() {
         this._createMap = {};

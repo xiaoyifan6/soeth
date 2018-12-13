@@ -22,9 +22,22 @@ export declare const ErrorCode: {
     PluginNotInit: number;
     AccountNotFound: number;
     MissIdentity: number;
+    TranSactionError: number;
+    NetError: number;
+    AccountError: number;
+    NetNotReady: number;
+    UnknowError: number;
 };
 export interface APICreator {
     generateAPI(config: any, mode: any): BaseAPI;
+}
+export declare class Net {
+    protected _url: string;
+    readonly url: string;
+    constructor(url: string);
+    readonly host: string;
+    readonly port: number;
+    readonly protocal: string;
 }
 declare class Base {
     private _API;

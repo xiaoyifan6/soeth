@@ -28,10 +28,30 @@ export const ErrorCode = {
     PluginNotInit: 1000,
     AccountNotFound: 1001,
     MissIdentity: 1002,
+
+    TranSactionError: 1003,
+    NetError: 1004,
+    AccountError: 1005,
+
+    NetNotReady: 1006,
+
+    UnknowError: -1
 };
 
 export interface APICreator {
     generateAPI(config: any, mode: any): BaseAPI;
+}
+
+export class Net {
+    protected _url: string;
+    public get url(): string { return this._url; }
+    public constructor(url: string) { this._url = url; }
+
+    public get host(): string { return this._url.split(":")[1].replace(/\/\//g, ""); }
+
+    public get port(): number { return parseInt(this._url.split(":")[2] || "443"); }
+
+    public get protocal(): string { return this._url.split(":")[0]; }
 }
 
 class Base {

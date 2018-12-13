@@ -13,32 +13,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Net = /** @class */ (function () {
-    function Net(url) {
-        this._url = url;
-    }
-    Object.defineProperty(Net.prototype, "url", {
-        get: function () { return this._url; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Net.prototype, "host", {
-        get: function () { return this._url.split(":")[1].replace(/\/\//g, ""); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Net.prototype, "port", {
-        get: function () { return parseInt(this._url.split(":")[2] || "443"); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Net.prototype, "protocal", {
-        get: function () { return this._url.split(":")[0]; },
-        enumerable: true,
-        configurable: true
-    });
-    return Net;
-}());
+var Base_1 = require("../base/Base");
 var MultiNet = /** @class */ (function (_super) {
     __extends(MultiNet, _super);
     function MultiNet() {
@@ -65,7 +40,7 @@ var MultiNet = /** @class */ (function (_super) {
         a && (a.dt = dt) && this.sort();
     };
     return MultiNet;
-}(Net));
+}(Base_1.Net));
 var EOSConfig = /** @class */ (function () {
     function EOSConfig(setting) {
         this._setting = setting;
