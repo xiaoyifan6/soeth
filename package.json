@@ -1,14 +1,14 @@
 {
   "name": "soeth",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "adapte eos and eth, and adapte pluin - MateMask and Scatter",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "type": "node tools/type.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -rf lib/*",
-    "build": "npm run type && npm run clean && tsc"
+    "clean": "rm -rf dist/*",
+    "build": "bash tools/build.sh"
   },
   "repository": {
     "type": "git",

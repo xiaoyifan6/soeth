@@ -1,10 +1,16 @@
-export type EosContractSetting = {
-  address: string
-  name: string
-  data: any[]
-}
+namespace eth {
+  export type BigNumber = {
+    toNumber: () => number
+  }
 
-export type EthSetting = {
-  contractURL: string
-  contracts: EosContractSetting | EosContractSetting[]
+  export type EosContractSetting = {
+    address: string
+    name: string
+    data: any[]
+  }
+
+  export type EthSetting = {
+    contractURL: string
+    contracts: EosContractSetting | EosContractSetting[]
+  }
 }

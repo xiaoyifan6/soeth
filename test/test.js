@@ -1,3 +1,3 @@
 var soeth = require('../lib')
-
-console.log(soeth.soeth.symbolName)
+var s = require('../lib/index.js')
+console.log(s.soeth.symbolName)

@@ -1,26 +1,22 @@
-import { Base, SymbolType, APICreator, BaseAPI } from './base/Base'
-import { EthApi } from './eth/EthApi'
-import { EosApi } from './eos/EosApi'
+const _base: base.Base = new base.Base()
 
-const base: Base = new Base()
-
-base.register(
-  SymbolType.eos,
-  new class implements APICreator {
-    public generateAPI(config: any, mode: any): BaseAPI {
-      return new EosApi(config, mode)
+_base.register(
+  base.SymbolType.eos,
+  new class implements base.APICreator {
+    public generateAPI(config: any, mode: any): base.BaseAPI {
+      return new eos.EosApi(config, mode)
     }
   }()
 )
 
-base.register(
-  SymbolType.eth,
-  new class implements APICreator {
-    public generateAPI(config: any, mode: any): BaseAPI {
-      return new EthApi(config, mode)
+_base.register(
+  base.SymbolType.eth,
+  new class implements base.APICreator {
+    public generateAPI(config: any, mode: any): base.BaseAPI {
+      return new eth.EthApi(config, mode)
     }
   }()
 )
 
-export const soeth = base
-export let API = base.API
+export const soeth = _base
+export let API = _base.API
