@@ -1,7 +1,7 @@
-import { CustomApi } from "../base/CustomApi";
-import { Web3 } from "../lib/web3";
-import { EthSetting } from "./Base";
-import BigNumber from "../lib/bignumber";
+import { CustomApi } from '../base/CustomApi';
+import { Web3 } from 'web3';
+import { EthSetting } from './Base';
+import BigNumber from 'bignumber';
 export declare class EthApi extends CustomApi {
     protected _web3: Web3 | undefined;
     protected _web3_browser: Web3 | undefined;

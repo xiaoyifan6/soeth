@@ -1,6 +1,6 @@
-import { CustomApi } from "../base/CustomApi";
-import { Eos } from "../lib/eosjs";
-import { Scatter, IAccount, Identity, EosSetting, EOSConfig } from "./Base";
+import { CustomApi } from '../base/CustomApi';
+import { Eos } from 'eosjs';
+import { Scatter, IAccount, Identity, EosSetting, EOSConfig } from './Base';
 export declare class EosApi extends CustomApi {
     protected _scatter: Scatter | undefined;
     protected _eos: Eos | undefined;

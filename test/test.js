@@ -1,7 +1,3 @@
-var soeth = require("../dist/index.js");
+var soeth = require('../lib')
 
-var api = new soeth.SoethAPI("hello");
-
-api.helloWorld();
-
-
+console.log(soeth.soeth.symbolName)

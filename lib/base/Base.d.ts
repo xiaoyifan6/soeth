@@ -39,7 +39,7 @@ export declare class Net {
     readonly port: number;
     readonly protocal: string;
 }
-declare class Base {
+export declare class Base {
     private _API;
     private _createMap;
     private _apiMap;
@@ -52,5 +52,3 @@ declare class Base {
     canUse(symbol: string, mode?: string): boolean;
     use(symbol: string, mode?: string): BaseAPI | undefined;
 }
-export declare var sdk: Base;
-export {};

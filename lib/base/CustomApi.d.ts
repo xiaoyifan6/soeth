@@ -1,4 +1,4 @@
-import { BaseAPI } from "./Base";
+import { BaseAPI } from './Base';
 declare type NullableFunction = Function | undefined;
 export declare abstract class CustomApi implements BaseAPI {
     private _mode;

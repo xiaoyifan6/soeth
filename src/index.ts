@@ -1,17 +1,26 @@
-export class SoethAPI {
+import { Base, SymbolType, APICreator, BaseAPI } from './base/Base'
+import { EthApi } from './eth/EthApi'
+import { EosApi } from './eos/EosApi'
 
-    private _config: any;
+const base: Base = new Base()
 
-    public get config(): any {
-        return this._config;
+base.register(
+  SymbolType.eos,
+  new class implements APICreator {
+    public generateAPI(config: any, mode: any): BaseAPI {
+      return new EosApi(config, mode)
     }
+  }()
+)
 
-    public constructor(config: any) {
-        this._config = config;
+base.register(
+  SymbolType.eth,
+  new class implements APICreator {
+    public generateAPI(config: any, mode: any): BaseAPI {
+      return new EthApi(config, mode)
     }
+  }()
+)
 
-    public helloWorld() {
-        console.log("hello world");
-    }
-
-}
+export const soeth = base
+export let API = base.API
