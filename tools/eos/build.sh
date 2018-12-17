@@ -158,7 +158,7 @@ fi
 # 下载合约
 echo "get contract files: $curpath/contracts/"
 if [ -d "$curpath/contracts/" ];then
-    cd $curpath/contracts/$contract_path/
+    cd $curpath/contracts/$contract_name/
     git pull
     cd "$curpath/../../"
 else
