@@ -61,7 +61,7 @@ namespace base {
       return this
     }
 
-    protected invorkEvent(name: string, data: any) {
+    protected async invorkEvent(name: string, data: any) {
       const eventList = this.event_Map[name]
       if (eventList) {
         for (let i = 0; i < eventList.length; i++) {
