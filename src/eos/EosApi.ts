@@ -11,15 +11,21 @@ namespace eos {
       return parseFloat(value)
     }
 
-    public constructor(config: EosSetting, mode: string) {
-      super(mode)
+    /**
+     *
+     * @param core EOS
+     * @param config
+     * @param mode
+     */
+    public constructor(core: any, config: EosSetting, mode: string) {
+      super(core, mode)
       this._config = new EOSConfig(config)
 
       const win: any = window
       this._scatter = win['scatter']
       if (this._scatter) {
         this._scatter.requireVersion(3.0)
-        this._eos = this._scatter.eos(this._config.eosNetwork, win['Eos'], {}, this._config.protocal)
+        this._eos = this._scatter.eos(this._config.eosNetwork, core, {}, this._config.protocal)
       } else {
         this._eos = undefined
       }
@@ -55,13 +61,14 @@ namespace eos {
 
     public check(): boolean {
       if (this.isInitPlugin()) {
-        this.error_cbk && this.error_cbk(base.ErrorCode.PluginNotInit)
+        // this.onError(base.ErrorCode.PluginNotInit)
+        this.onError(base.ErrorCode.PluginNotInit)
         return false
       } else if (this.hasAccount()) {
-        this.error_cbk && this.error_cbk(base.ErrorCode.AccountNotFound)
+        this.onError(base.ErrorCode.AccountNotFound)
         return false
       } else if (!this.identity) {
-        this.error_cbk && this.error_cbk(base.ErrorCode.MissIdentity)
+        this.onError(base.ErrorCode.MissIdentity)
         this.miss_identity_cbk && this.miss_identity_cbk()
         return false
       }
@@ -88,7 +95,7 @@ namespace eos {
         win['scatter'] && (this._scatter = win['scatter'])
         if (this._scatter) {
           this._scatter.requireVersion(3.0)
-          this._eos = this._scatter.eos(this._config.eosNetwork, win['Eos'], {}, this._config.protocal)
+          this._eos = this._scatter.eos(this._config.eosNetwork, this.core, {}, this._config.protocal)
         }
       }
 
@@ -100,7 +107,11 @@ namespace eos {
         })
 
         if (name !== this.defaultAccount()) {
-          this.account_changed_cbk && this.account_changed_cbk(this.defaultAccount(), name)
+          // this.account_changed_cbk && this.account_changed_cbk(this.defaultAccount(), name)
+          this.invorkEvent(base.BaseEvent.ACCOUNT_CHANGED, {
+            account: this.defaultAccount(),
+            oldAccount: name
+          })
         }
       }
     }
@@ -111,18 +122,16 @@ namespace eos {
     }
 
     public encode(value: string): string {
-      const win: any = Window
-      return win['Eos'].modules.format.encodeName(value, false)
+      return this.core.modules.format.encodeName(value, false)
     }
 
     public decode(value: string): string {
-      const win: any = Window
-      return win['Eos'].modules.format.decodeName(value.toString(), false)
+      return this.core.modules.format.decodeName(value.toString(), false)
     }
 
     public async requireIdentity() {
       if (!this._scatter) {
-        this.error_cbk && this.error_cbk(base.ErrorCode.PluginNotInit)
+        this.onError(base.ErrorCode.PluginNotInit)
         throw { errorCode: base.ErrorCode.PluginNotInit }
       }
 
@@ -134,7 +143,7 @@ namespace eos {
           })
           return res
         } else {
-          this.error_cbk && this.error_cbk(base.ErrorCode.AccountNotFound)
+          this.onError(base.ErrorCode.AccountNotFound)
           throw { errorCode: base.ErrorCode.AccountNotFound }
         }
       } catch (e) {
@@ -283,15 +292,15 @@ namespace eos {
 
     public async buyRam(ramAmount: number) {
       try {
-        this.contract_cbk && this.contract_cbk(0)
+        this.onContract(0)
         const res = await this.doAction('eosio', 'buyrambytes', this.defaultAccount(), this.defaultAccount(), ramAmount)
-        this.contract_cbk && this.contract_cbk(1, res)
+        this.onContract(1, res)
         return res
       } catch (e) {
         this.handleError(e)
         throw e
       } finally {
-        this.contract_cbk && this.contract_cbk(3)
+        this.onContract(3)
       }
     }
 
@@ -325,22 +334,22 @@ namespace eos {
 
     public async sellRam(ramAmount: number) {
       try {
-        this.contract_cbk && this.contract_cbk(0)
+        this.onContract(0)
         const res = await this.doAction('eosio', 'sellram', this.defaultAccount(), ramAmount)
-        this.contract_cbk && this.contract_cbk(1, res)
+        this.onContract(1, res)
         return res
       } catch (e) {
         this.handleError(e)
         throw e
       } finally {
-        this.contract_cbk && this.contract_cbk(3)
+        this.onContract(3)
       }
     }
 
     // 抵押EOS购买NET、CPU
     public async delegatebw(net_amount: number, cpu_amount: number) {
       try {
-        this.contract_cbk && this.contract_cbk(0)
+        this.onContract(0)
         const res = await this.doAction(
           'eosio',
           'delegatebw',
@@ -350,20 +359,21 @@ namespace eos {
           `${cpu_amount.toFixed(4)} EOS`,
           0
         )
-        this.contract_cbk && this.contract_cbk(1, res)
+        this.onContract(1, res)
         return res
       } catch (e) {
         this.handleError(e)
         throw e
       } finally {
-        this.contract_cbk && this.contract_cbk(3)
+        this.onContract(3)
       }
     }
 
     // 从NET、CPU资源中赎回EOS
     public async undelegatebw(net_amount: number, cpu_amount: number) {
       try {
-        this.contract_cbk && this.contract_cbk(0)
+        this.onContract(0)
+
         const res = await this.doAction(
           'eosio',
           'undelegatebw',
@@ -372,13 +382,13 @@ namespace eos {
           `${net_amount.toFixed(4)} EOS`,
           `${cpu_amount.toFixed(4)} EOS`
         )
-        this.contract_cbk && this.contract_cbk(1, res)
+        this.onContract(1, res)
         return res
       } catch (e) {
         this.handleError(e)
         throw e
       } finally {
-        this.contract_cbk && this.contract_cbk(3)
+        this.onContract(3)
       }
     }
 
@@ -394,10 +404,9 @@ namespace eos {
         }
       }
 
-      this.error_cbk &&
-        (e.error && e.error.details
-          ? this.error_cbk(base.ErrorCode.TranSactionError, e)
-          : this.error_cbk(base.ErrorCode.UnknowError, e))
+      e.error && e.error.details
+        ? this.onError(base.ErrorCode.TranSactionError, e)
+        : this.onError(base.ErrorCode.UnknowError, e)
     }
   }
 }

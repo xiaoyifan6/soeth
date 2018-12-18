@@ -3,6 +3,18 @@ declare namespace base {
         eth: string;
         eos: string;
     };
+    const BaseEvent: {
+        EVENT_CBK: string;
+        ERROR_CBK: string;
+        ACCOUNT_CHANGED: string;
+        CONTRACT_CBK: string;
+        IDENTITY_CBK: string;
+    };
+    type Event = {
+        target: any;
+        data: any;
+    };
+    type EventCBK = (e: Event) => void;
     interface BaseAPI {
         getSymbol(): string;
         plugin(): string;
@@ -13,11 +25,8 @@ declare namespace base {
         defaultAccount(): string;
         check(): boolean;
         addEvent(name: string, cbk: Function): void;
-        onEvent(cbk: Function): BaseAPI;
-        onError(cbk: Function): BaseAPI;
-        onAccountChanged(cbk: Function): BaseAPI;
-        onIdentity(cbk: Function): BaseAPI;
-        onContract(cbk: Function): BaseAPI;
+        addEventListener(name: string, cbk: EventCBK, thisObj?: any): BaseAPI;
+        removeEventListener(name: string, cbk: EventCBK, thisObj?: any): BaseAPI;
     }
     const ErrorCode: {
         PluginNotInit: number;
@@ -30,7 +39,7 @@ declare namespace base {
         UnknowError: number;
     };
     interface APICreator {
-        generateAPI(config: any, mode: any): BaseAPI;
+        generateAPI(core: any, config: any, mode: any): BaseAPI;
     }
     class Net {
         protected _url: string;
@@ -45,7 +54,7 @@ declare namespace base {
         private _createMap;
         private _apiMap;
         private generateKey;
-        initSdk(symbol: string, config: any, mode?: string): BaseAPI;
+        initSdk(symbol: string, core: any, config: any, mode?: string): BaseAPI;
         register(symbol: string, creator: APICreator): void;
         readonly API: BaseAPI | undefined;
         readonly symbolName: string;
@@ -55,23 +64,26 @@ declare namespace base {
     }
 }
 declare namespace base {
-    type NullableFunction = Function | undefined;
+    type EventObj = {
+        event_cbk: EventCBK;
+        thisObj?: any;
+    };
     abstract class CustomApi implements BaseAPI {
         private _mode;
         private _isRunning;
         private _tIndex;
-        protected event_cbk: NullableFunction;
-        protected error_cbk: NullableFunction;
-        protected account_changed_cbk: NullableFunction;
-        protected contract_cbk: NullableFunction;
-        protected identity_cbk: NullableFunction;
+        private _core;
+        protected event_Map: {
+            [eventName: string]: EventObj[];
+        };
+        protected readonly core: any;
         readonly mode: string;
         readonly isRunning: boolean;
-        onEvent(cbk: Function): BaseAPI;
-        onError(cbk: Function): BaseAPI;
-        onAccountChanged(cbk: Function): BaseAPI;
-        onIdentity(cbk: Function): BaseAPI;
-        onContract(cbk: Function): BaseAPI;
+        addEventListener(name: string, cbk: EventCBK, thisObj?: any): BaseAPI;
+        protected onError(errorCode: number, detail?: any): CustomApi;
+        protected onContract(status: number, detail?: any): this;
+        protected invorkEvent(name: string, data: any): void;
+        removeEventListener(name: string, cbk: EventCBK, thisObj?: any): BaseAPI;
         getMode(): string;
         protected sleep(t: number): Promise<any>;
         protected start(): void;
@@ -85,7 +97,7 @@ declare namespace base {
         abstract check(): boolean;
         abstract addEvent(name: string, cbk: Function): void;
         protected updateStatus(): void;
-        constructor(mode: string);
+        constructor(_core: any, mode: string);
     }
 }
 declare namespace eth {
@@ -417,7 +429,7 @@ declare namespace eth {
         };
         protected net_changed_cbk: Function | undefined;
         onNetChanged(cbk: Function): void;
-        constructor(config: EthSetting, mode: string);
+        constructor(core: any, config: EthSetting, mode: string);
         requireIdentity(): Promise<void>;
         protected updateStatus(): void;
         getSymbol(): string;
@@ -853,7 +865,7 @@ declare namespace eos {
         protected _account: IAccount | undefined;
         protected miss_identity_cbk: Function | undefined;
         private formatEos;
-        constructor(config: EosSetting, mode: string);
+        constructor(core: any, config: EosSetting, mode: string);
         readonly eos: Eos | undefined;
         getSymbol(): string;
         plugin(): string;

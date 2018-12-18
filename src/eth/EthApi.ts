@@ -18,8 +18,8 @@ namespace eth {
       this.net_changed_cbk = cbk
     }
 
-    public constructor(config: EthSetting, mode: string) {
-      super(mode)
+    public constructor(core: any, config: EthSetting, mode: string) {
+      super(core, mode)
 
       this._config = config
       this._netId = ''
@@ -28,7 +28,7 @@ namespace eth {
 
       const win: any = window
       const ethereum = win['ethereum']
-      const _Web3 = win['Web3']
+      const _Web3 = core
 
       if (ethereum) {
         this._web3 = new _Web3(ethereum)
@@ -51,7 +51,7 @@ namespace eth {
       try {
         await ethereum.enable()
       } catch (e) {
-        this.error_cbk && this.error_cbk(base.ErrorCode.MissIdentity, e)
+        this.onError(base.ErrorCode.MissIdentity, e)
       }
     }
 
@@ -61,7 +61,7 @@ namespace eth {
       if (!this.isInitPlugin()) {
         const win: any = window
         const ethereum = win['ethereum']
-        const _Web3 = win['Web3']
+        const _Web3 = this.core
 
         if (ethereum) {
           this._web3 = new _Web3(ethereum)
@@ -80,7 +80,7 @@ namespace eth {
           this._netId = netId
         }
 
-        err && this.error_cbk && this.error_cbk(base.ErrorCode.NetError, err)
+        err && this.onError(base.ErrorCode.NetError, err)
       })
       // 检查账号是否切换
       web3.eth.getAccounts((err, res) => {
@@ -91,11 +91,16 @@ namespace eth {
 
         const account = res[0]
         if (account !== this._account) {
-          this.account_changed_cbk && this.account_changed_cbk(account, this._account)
+          // this.account_changed_cbk && this.account_changed_cbk(account, this._account)
+          this.invorkEvent(base.BaseEvent.ACCOUNT_CHANGED, {
+            account: account,
+            oldAccount: this._account
+          })
+
           this._account = account
         }
 
-        err && this.error_cbk && this.error_cbk(base.ErrorCode.AccountError, err)
+        err && this.onError(base.ErrorCode.AccountError, err)
       })
     }
 
@@ -125,13 +130,13 @@ namespace eth {
 
     public check(): boolean {
       if (this.isInitPlugin()) {
-        this.error_cbk && this.error_cbk(base.ErrorCode.PluginNotInit)
+        this.onError(base.ErrorCode.PluginNotInit)
         return false
       } else if (this.hasAccount()) {
-        this.error_cbk && this.error_cbk(base.ErrorCode.AccountNotFound)
+        this.onError(base.ErrorCode.AccountNotFound)
         return false
       } else if (!this._netId) {
-        this.error_cbk && this.error_cbk(base.ErrorCode.NetNotReady)
+        this.onError(base.ErrorCode.NetNotReady)
         return false
       }
       return true

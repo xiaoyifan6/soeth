@@ -1,16 +1,25 @@
 namespace base {
-  type NullableFunction = Function | undefined
+  type EventObj = {
+    event_cbk: EventCBK
+    thisObj?: any
+  }
 
   export abstract class CustomApi implements BaseAPI {
     private _mode: string
     private _isRunning: boolean
     private _tIndex: number
 
-    protected event_cbk: NullableFunction
-    protected error_cbk: NullableFunction
-    protected account_changed_cbk: NullableFunction
-    protected contract_cbk: NullableFunction
-    protected identity_cbk: NullableFunction
+    private _core: any
+
+    protected event_Map: { [eventName: string]: EventObj[] }
+    // protected error_cbk: NullableFunction
+    // protected account_changed_cbk: NullableFunction
+    // protected contract_cbk: NullableFunction
+    // protected identity_cbk: NullableFunction
+
+    protected get core(): any {
+      return this._core
+    }
 
     public get mode(): string {
       return this._mode
@@ -19,30 +28,91 @@ namespace base {
       return this._isRunning
     }
 
-    public onEvent(cbk: Function): BaseAPI {
-      this.error_cbk = cbk
-      return this
-    } // 事件调用
+    public addEventListener(name: string, cbk: EventCBK, thisObj?: any): BaseAPI {
+      if (this.event_Map[name]) {
+        let obj = this.event_Map[name].find(v => {
+          return v.event_cbk === cbk && ((v.thisObj && v.thisObj === thisObj) || (!v.thisObj && !thisObj))
+        })
+        if (obj) return this
+      } else {
+        this.event_Map[name] = []
+      }
 
-    public onError(cbk: Function): BaseAPI {
-      this.error_cbk = cbk
+      this.event_Map[name].push({
+        event_cbk: cbk,
+        thisObj: thisObj
+      })
       return this
-    } // 错误
+    }
 
-    public onAccountChanged(cbk: Function): BaseAPI {
-      this.account_changed_cbk = cbk
+    protected onError(errorCode: number, detail?: any): CustomApi {
+      this.invorkEvent(base.BaseEvent.ERROR_CBK, {
+        errorCode: errorCode,
+        detail: detail
+      })
       return this
-    } // 账号切换
+    }
 
-    public onIdentity(cbk: Function): BaseAPI {
-      this.identity_cbk = cbk
+    protected onContract(status: number, detail?: any) {
+      this.invorkEvent(base.BaseEvent.CONTRACT_CBK, {
+        errorCode: status,
+        detail: detail
+      })
       return this
-    } // 是否授权
+    }
 
-    public onContract(cbk: Function): BaseAPI {
-      this.contract_cbk = cbk
+    protected invorkEvent(name: string, data: any) {
+      const eventList = this.event_Map[name]
+      if (eventList) {
+        for (let i = 0; i < eventList.length; i++) {
+          let eventObj = eventList[i]
+          eventObj.event_cbk.apply(eventObj.thisObj || window, [
+            {
+              target: eventObj.thisObj,
+              data: data
+            }
+          ])
+        }
+      }
+    }
+
+    public removeEventListener(name: string, cbk: EventCBK, thisObj?: any): BaseAPI {
+      if (this.event_Map[name]) {
+        let obj = this.event_Map[name].find(v => {
+          return v.event_cbk === cbk && ((v.thisObj && v.thisObj === thisObj) || (!v.thisObj && !thisObj))
+        })
+        let index = obj ? this.event_Map[name].indexOf(obj) : -1
+        if (index > -1) {
+          this.event_Map[name].splice(index, 1)
+        }
+      }
       return this
-    } // 合约调用
+    }
+
+    // public onEvent(cbk: Function): BaseAPI {
+    //   this.error_cbk = cbk
+    //   return this
+    // } // 事件调用
+
+    // public onError(cbk: Function): BaseAPI {
+    //   this.error_cbk = cbk
+    //   return this
+    // } // 错误
+
+    // public onAccountChanged(cbk: Function): BaseAPI {
+    //   this.account_changed_cbk = cbk
+    //   return this
+    // } // 账号切换
+
+    // public onIdentity(cbk: Function): BaseAPI {
+    //   this.identity_cbk = cbk
+    //   return this
+    // } // 是否授权
+
+    // public onContract(cbk: Function): BaseAPI {
+    //   this.contract_cbk = cbk
+    //   return this
+    // } // 合约调用
 
     public getMode(): string {
       return this._mode
@@ -87,10 +157,11 @@ namespace base {
       // 更新状态 只有使用插件时会用到
     }
 
-    public constructor(mode: string) {
+    public constructor(_core: any, mode: string) {
       this._mode = mode
       this._isRunning = false
       this._tIndex = 0
+      this.event_Map = {}
 
       this.start()
     }

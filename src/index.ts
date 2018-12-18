@@ -3,8 +3,8 @@ const _base: base.Base = new base.Base()
 _base.register(
   base.SymbolType.eos,
   new class implements base.APICreator {
-    public generateAPI(config: any, mode: any): base.BaseAPI {
-      return new eos.EosApi(config, mode)
+    public generateAPI(core: any, config: any, mode: any): base.BaseAPI {
+      return new eos.EosApi(core, config, mode)
     }
   }()
 )
@@ -12,8 +12,8 @@ _base.register(
 _base.register(
   base.SymbolType.eth,
   new class implements base.APICreator {
-    public generateAPI(config: any, mode: any): base.BaseAPI {
-      return new eth.EthApi(config, mode)
+    public generateAPI(core: any, config: any, mode: any): base.BaseAPI {
+      return new eth.EthApi(core, config, mode)
     }
   }()
 )

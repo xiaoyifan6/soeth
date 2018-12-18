@@ -4,6 +4,21 @@ namespace base {
     eos: 'eos'
   }
 
+  export const BaseEvent = {
+    EVENT_CBK: 'event callback',
+    ERROR_CBK: 'error callback',
+    ACCOUNT_CHANGED: 'account changed',
+    CONTRACT_CBK: 'contract callbact',
+    IDENTITY_CBK: 'identity callback'
+  }
+
+  export type Event = {
+    target: any
+    data: any
+  }
+
+  export type EventCBK = (e: Event) => void
+
   export interface BaseAPI {
     getSymbol(): string // eos或者eth
     plugin(): string // 插件名称
@@ -17,11 +32,14 @@ namespace base {
     check(): boolean // 检查钱包是否可用
     addEvent(name: string, cbk: Function): void
 
-    onEvent(cbk: Function): BaseAPI // 事件调用
-    onError(cbk: Function): BaseAPI // 错误
-    onAccountChanged(cbk: Function): BaseAPI // 账号切换
-    onIdentity(cbk: Function): BaseAPI // 是否授权
-    onContract(cbk: Function): BaseAPI // 合约调用
+    addEventListener(name: string, cbk: EventCBK, thisObj?: any): BaseAPI
+    removeEventListener(name: string, cbk: EventCBK, thisObj?: any): BaseAPI
+
+    // onEvent(cbk: Function): BaseAPI // 事件调用
+    // onError(cbk: Function): BaseAPI // 错误
+    // onAccountChanged(cbk: Function): BaseAPI // 账号切换
+    // onIdentity(cbk: Function): BaseAPI // 是否授权
+    // onContract(cbk: Function): BaseAPI // 合约调用
   }
 
   export const ErrorCode = {
@@ -39,7 +57,7 @@ namespace base {
   }
 
   export interface APICreator {
-    generateAPI(config: any, mode: any): BaseAPI
+    generateAPI(core: any, config: any, mode: any): BaseAPI
   }
 
   export class Net {
@@ -74,9 +92,16 @@ namespace base {
       return symbol + '_' + mode
     }
 
-    public initSdk(symbol: string, config: any, mode: string = ''): BaseAPI {
+    /**
+     * 初始化sdk
+     * @param symbol eth/eos
+     * @param core Eos/Web3
+     * @param config
+     * @param mode
+     */
+    public initSdk(symbol: string, core: any, config: any, mode: string = ''): BaseAPI {
       const key = this.generateKey(symbol, mode)
-      return (this._API = this._apiMap[key] = this._createMap[symbol].generateAPI(config, mode))
+      return (this._API = this._apiMap[key] = this._createMap[symbol].generateAPI(core, config, mode))
     }
 
     public register(symbol: string, creator: APICreator) {
