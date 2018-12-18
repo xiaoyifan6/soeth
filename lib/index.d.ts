@@ -413,6 +413,9 @@ declare namespace eth {
         contractURL: string;
         contracts: EosContractSetting | EosContractSetting[];
     };
+    const EthEvent: {
+        NET_CHANGED: string;
+    };
 }
 declare namespace eth {
     class EthApi extends base.CustomApi {
@@ -427,8 +430,6 @@ declare namespace eth {
         protected _contractBMap: {
             [name: string]: Web3.Contract<any>;
         };
-        protected net_changed_cbk: Function | undefined;
-        onNetChanged(cbk: Function): void;
         constructor(core: any, config: EthSetting, mode: string);
         requireIdentity(): Promise<void>;
         protected updateStatus(): void;
@@ -452,6 +453,9 @@ declare namespace eos {
         name: string;
         authority: string;
         blockchain: string;
+    };
+    const EosEvent: {
+        MISS_IDENTITY: string;
     };
     type Identity = {
         hash: string;
@@ -863,7 +867,6 @@ declare namespace eos {
         protected _eos: Eos | undefined;
         protected _config: EOSConfig;
         protected _account: IAccount | undefined;
-        protected miss_identity_cbk: Function | undefined;
         private formatEos;
         constructor(core: any, config: EosSetting, mode: string);
         readonly eos: Eos | undefined;
@@ -878,7 +881,6 @@ declare namespace eos {
         addEvent(name: string, cbk: Function): void;
         forgetIdentity(): void;
         protected updateStatus(): void;
-        onMissItentity(cbk: Function): EosApi;
         encode(value: string): string;
         decode(value: string): string;
         requireIdentity(): Promise<Identity>;

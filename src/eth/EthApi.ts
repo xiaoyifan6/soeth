@@ -12,11 +12,11 @@ namespace eth {
     protected _contractMap: { [name: string]: Web3.Contract<any> }
     protected _contractBMap: { [name: string]: Web3.Contract<any> }
 
-    protected net_changed_cbk: Function | undefined
+    // protected net_changed_cbk: Function | undefined
 
-    public onNetChanged(cbk: Function) {
-      this.net_changed_cbk = cbk
-    }
+    // public onNetChanged(cbk: Function) {
+    //   this.net_changed_cbk = cbk
+    // }
 
     public constructor(core: any, config: EthSetting, mode: string) {
       super(core, mode)
@@ -76,7 +76,11 @@ namespace eth {
       // 检查网络状态
       web3.version.getNetwork((err: Error, netId: string) => {
         if (netId !== this._netId) {
-          this.net_changed_cbk && this.net_changed_cbk(netId, this._netId)
+          // this.net_changed_cbk && this.net_changed_cbk(netId, this._netId)
+          this.invorkEvent(EthEvent.NET_CHANGED, {
+            netId: netId,
+            oldNetId: this._netId
+          })
           this._netId = netId
         }
 

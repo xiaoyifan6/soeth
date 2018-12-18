@@ -5,7 +5,7 @@ namespace eos {
     protected _config: EOSConfig
     protected _account: IAccount | undefined
 
-    protected miss_identity_cbk: Function | undefined
+    // protected miss_identity_cbk: Function | undefined
 
     private formatEos(value: string) {
       return parseFloat(value)
@@ -69,7 +69,8 @@ namespace eos {
         return false
       } else if (!this.identity) {
         this.onError(base.ErrorCode.MissIdentity)
-        this.miss_identity_cbk && this.miss_identity_cbk()
+        // this.miss_identity_cbk && this.miss_identity_cbk()
+        this.invorkEvent(EosEvent.MISS_IDENTITY, {})
         return false
       }
       return true
@@ -116,10 +117,10 @@ namespace eos {
       }
     }
 
-    public onMissItentity(cbk: Function): EosApi {
-      this.miss_identity_cbk = cbk
-      return this
-    }
+    // public onMissItentity(cbk: Function): EosApi {
+    //   this.miss_identity_cbk = cbk
+    //   return this
+    // }
 
     public encode(value: string): string {
       return this.core.modules.format.encodeName(value, false)

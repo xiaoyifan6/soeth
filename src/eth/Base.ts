@@ -13,4 +13,8 @@ namespace eth {
     contractURL: string
     contracts: EosContractSetting | EosContractSetting[]
   }
+
+  export const EthEvent = {
+    NET_CHANGED: 'net changed callback'
+  }
 }

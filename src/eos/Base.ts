@@ -5,6 +5,10 @@ namespace eos {
     blockchain: string
   }
 
+  export const EosEvent = {
+    MISS_IDENTITY: 'miss identity callback'
+  }
+
   export type Identity = {
     hash: string
     publicKey: string
